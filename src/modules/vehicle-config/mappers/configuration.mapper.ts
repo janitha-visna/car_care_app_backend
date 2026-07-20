@@ -3,6 +3,7 @@ import { VehicleCategory } from '../entities/vehicle-category.entity';
 import {
   ServiceOptionDto,
   ServiceTypeDto,
+  VehicleCategoriesConfigurationDto,
   VehicleCategoryConfigurationDto,
   VehicleTypeDto,
 } from '../dto/vehicle-category-configuration.dto';
@@ -15,11 +16,19 @@ import {
  */
 @Injectable()
 export class ConfigurationMapper {
+  toVehicleCategoriesConfiguration(
+    categories: VehicleCategory[],
+  ): VehicleCategoriesConfigurationDto {
+    return {
+      categories: categories.map((category) =>
+        this.toVehicleCategoryConfiguration(category),
+      ),
+    };
+  }
 
   toVehicleCategoryConfiguration(
     category: VehicleCategory,
   ): VehicleCategoryConfigurationDto {
-
     const vehicleTypes = category.vehicleTypes ?? [];
 
     return {
@@ -32,45 +41,49 @@ export class ConfigurationMapper {
     };
   }
 
-
-  private toVehicleType(vehicleType: any): VehicleTypeDto {
-
+  private toVehicleType(vehicleType: {
+    id: number;
+    name: string;
+    serviceMappings: {
+      serviceType: {
+        id: number;
+        name: string;
+        options: { id: number; name: string; required: boolean }[];
+      };
+    }[];
+  }): VehicleTypeDto {
     const serviceMappings = vehicleType.serviceMappings ?? [];
 
     const services = serviceMappings
-      .filter((mapping) => {
-        return mapping.serviceType != null;
-      })
-      .map((mapping) => {
-        return this.toServiceType(mapping.serviceType);
-      });
-
+      .filter((mapping) => mapping.serviceType != null)
+      .map((mapping) => this.toServiceType(mapping.serviceType));
 
     return {
       id: vehicleType.id,
       name: vehicleType.name,
-      services: services,
+      services,
     };
   }
 
-
-  private toServiceType(serviceType: any): ServiceTypeDto {
-
+  private toServiceType(serviceType: {
+    id: number;
+    name: string;
+    options: { id: number; name: string; required: boolean }[];
+  }): ServiceTypeDto {
     const options = serviceType.options ?? [];
 
     return {
       id: serviceType.id,
       name: serviceType.name,
-
-      options: options.map((option) => {
-        return this.toServiceOption(option);
-      }),
+      options: options.map((option) => this.toServiceOption(option)),
     };
   }
 
-
-  private toServiceOption(option: any): ServiceOptionDto {
-
+  private toServiceOption(option: {
+    id: number;
+    name: string;
+    required: boolean;
+  }): ServiceOptionDto {
     return {
       id: option.id,
       name: option.name,

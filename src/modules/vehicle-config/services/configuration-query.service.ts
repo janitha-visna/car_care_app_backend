@@ -1,6 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigurationMapper } from '../mappers/configuration.mapper';
-import { VehicleCategoryConfigurationDto } from '../dto/vehicle-category-configuration.dto';
+import {
+  VehicleCategoriesConfigurationDto,
+  VehicleCategoryConfigurationDto,
+} from '../dto/vehicle-category-configuration.dto';
 import { VEHICLE_CONFIGURATION_REPOSITORY } from '../repositories/vehicle-configuration.repository.interface';
 import type { IVehicleConfigurationRepository } from '../repositories/vehicle-configuration.repository.interface';
 
@@ -32,5 +35,14 @@ export class ConfigurationQueryService {
     }
 
     return this.configurationMapper.toVehicleCategoryConfiguration(category);
+  }
+
+  async getAllVehicleCategoriesConfiguration(): Promise<VehicleCategoriesConfigurationDto> {
+    const categories =
+      await this.vehicleConfigurationRepository.findAllActiveCategoriesWithConfiguration();
+
+    return this.configurationMapper.toVehicleCategoriesConfiguration(
+      categories,
+    );
   }
 }

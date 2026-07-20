@@ -27,3 +27,8 @@ export interface VehicleCategoryConfigurationDto {
   category: string;
   vehicleTypes: VehicleTypeDto[];
 }
+
+/** Shape returned by GET /configuration/vehicle-categories. */
+export interface VehicleCategoriesConfigurationDto {
+  categories: VehicleCategoryConfigurationDto[];
+}

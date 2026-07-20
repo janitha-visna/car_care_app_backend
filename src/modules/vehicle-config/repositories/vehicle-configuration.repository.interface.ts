@@ -15,6 +15,12 @@ export interface IVehicleConfigurationRepository {
   findActiveCategoryWithConfiguration(
     categoryId: number,
   ): Promise<VehicleCategory | null>;
+
+  /**
+   * Same tree as findActiveCategoryWithConfiguration, but for every active
+   * category at once — backs the "single call at startup" endpoint.
+   */
+  findAllActiveCategoriesWithConfiguration(): Promise<VehicleCategory[]>;
 }
 
 export const VEHICLE_CONFIGURATION_REPOSITORY = Symbol(

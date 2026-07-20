@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { VehicleCategory } from '../entities/vehicle-category.entity';
 import { IVehicleConfigurationRepository } from './vehicle-configuration.repository.interface';
 
@@ -19,6 +19,26 @@ export class VehicleConfigurationTypeOrmRepository implements IVehicleConfigurat
   async findActiveCategoryWithConfiguration(
     categoryId: number,
   ): Promise<VehicleCategory | null> {
+    return this.buildConfigurationQuery()
+      .andWhere('category.id = :categoryId', { categoryId })
+      .getOne();
+  }
+
+  async findAllActiveCategoriesWithConfiguration(): Promise<VehicleCategory[]> {
+    return this.buildConfigurationQuery()
+      .orderBy('category.name', 'ASC')
+      .addOrderBy('vehicleType.sortOrder', 'ASC')
+      .addOrderBy('mapping.sortOrder', 'ASC')
+      .addOrderBy('option.sortOrder', 'ASC')
+      .getMany();
+  }
+
+  /**
+   * Shared join chain: category -> active vehicle types -> active service
+   * mappings -> active service types -> active options. Kept in one place
+   * so the single-category and all-categories queries can't drift apart.
+   */
+  private buildConfigurationQuery(): SelectQueryBuilder<VehicleCategory> {
     return this.categoryRepository
       .createQueryBuilder('category')
       .leftJoinAndSelect(
@@ -45,11 +65,9 @@ export class VehicleConfigurationTypeOrmRepository implements IVehicleConfigurat
         'option.isActive = :active',
         { active: true },
       )
-      .where('category.id = :categoryId', { categoryId })
-      .andWhere('category.isActive = :active', { active: true })
+      .where('category.isActive = :active', { active: true })
       .orderBy('vehicleType.sortOrder', 'ASC')
       .addOrderBy('mapping.sortOrder', 'ASC')
-      .addOrderBy('option.sortOrder', 'ASC')
-      .getOne();
+      .addOrderBy('option.sortOrder', 'ASC');
   }
 }
