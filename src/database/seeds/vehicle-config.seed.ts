@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
+import { ServiceOption } from '../../modules/vehicle-config/entities/service-option.entity';
+import { ServiceType } from '../../modules/vehicle-config/entities/service-type.entity';
+import { VehicleAvailableService } from '../../modules/vehicle-config/entities/vehicle-available-service.entity';
 import { VehicleCategory } from '../../modules/vehicle-config/entities/vehicle-category.entity';
 import { VehicleType } from '../../modules/vehicle-config/entities/vehicle-type.entity';
-import { ServiceType } from '../../modules/vehicle-config/entities/service-type.entity';
-import { ServiceOption } from '../../modules/vehicle-config/entities/service-option.entity';
-import { VehicleServiceMapping } from '../../modules/vehicle-config/entities/vehicle-service-mapping.entity';
 import {
   SERVICE_OPTION_NAMES,
   SERVICE_TYPE_NAMES,
@@ -11,11 +11,7 @@ import {
 } from './vehicle-config.seed-data';
 
 /**
- * Idempotent: safe to re-run. Each entity is looked up by its natural
- * unique key first (find-or-create) instead of blindly inserting, so
- * running this against a database that already has some of the data
- * (e.g. after adding a new category to the seed file) only inserts what's
- * missing rather than erroring on the unique constraints or duplicating rows.
+ * Idempotent seed for the vehicle configuration catalog and availability rows.
  */
 export async function seedVehicleConfiguration(
   dataSource: DataSource,
@@ -24,41 +20,25 @@ export async function seedVehicleConfiguration(
   const typeRepo = dataSource.getRepository(VehicleType);
   const serviceTypeRepo = dataSource.getRepository(ServiceType);
   const optionRepo = dataSource.getRepository(ServiceOption);
-  const mappingRepo = dataSource.getRepository(VehicleServiceMapping);
+  const availabilityRepo = dataSource.getRepository(VehicleAvailableService);
 
-  // 1. Service types (Body Wash, Normal Service, Full Service)
   const serviceTypeByName = new Map<string, ServiceType>();
-  for (const [index, name] of SERVICE_TYPE_NAMES.entries()) {
+  for (const name of SERVICE_TYPE_NAMES) {
     let serviceType = await serviceTypeRepo.findOneBy({ name });
     serviceType ??= await serviceTypeRepo.save(
-      serviceTypeRepo.create({ name, sortOrder: index }),
+      serviceTypeRepo.create({ name }),
     );
     serviceTypeByName.set(name, serviceType);
   }
 
-  // 2. Service options — same catalog under each service type, since the
-  // requirement states every service type supports these configurable items.
-  for (const serviceType of serviceTypeByName.values()) {
-    for (const [index, name] of SERVICE_OPTION_NAMES.entries()) {
-      const existing = await optionRepo.findOneBy({
-        serviceTypeId: serviceType.id,
-        name,
-      });
-      if (!existing) {
-        await optionRepo.save(
-          optionRepo.create({
-            serviceTypeId: serviceType.id,
-            name,
-            required: false,
-            sortOrder: index,
-          }),
-        );
-      }
-    }
+  const serviceOptionByName = new Map<string, ServiceOption>();
+  for (const name of SERVICE_OPTION_NAMES) {
+    let serviceOption = await optionRepo.findOneBy({ name });
+    serviceOption ??= await optionRepo.save(
+      optionRepo.create({ name }),
+    );
+    serviceOptionByName.set(name, serviceOption);
   }
-
-  // 3. Vehicle categories, subcategories (VehicleType rows), and the
-  // service mappings that say which services each subcategory supports.
   for (const categorySeed of VEHICLE_CATEGORY_SEEDS) {
     let category = await categoryRepo.findOneBy({
       name: categorySeed.category,
@@ -67,43 +47,47 @@ export async function seedVehicleConfiguration(
       categoryRepo.create({ name: categorySeed.category }),
     );
 
-    for (const [
-      typeIndex,
-      subcategoryName,
-    ] of categorySeed.subcategories.entries()) {
+    for (const vehicleTypeSeed of categorySeed.vehicleTypes) {
       let vehicleType = await typeRepo.findOneBy({
-        categoryId: category.id,
-        name: subcategoryName,
+        vehicleCategoryId: category.id,
+        name: vehicleTypeSeed.name,
       });
       vehicleType ??= await typeRepo.save(
         typeRepo.create({
-          categoryId: category.id,
-          name: subcategoryName,
-          sortOrder: typeIndex,
+          vehicleCategoryId: category.id,
+          name: vehicleTypeSeed.name,
         }),
       );
 
-      for (const [
-        mappingIndex,
-        serviceName,
-      ] of categorySeed.supportedServices.entries()) {
-        const serviceType = serviceTypeByName.get(serviceName);
+      for (const availableService of vehicleTypeSeed.services) {
+        const serviceType = serviceTypeByName.get(
+          availableService.serviceType,
+        );
         if (!serviceType) {
           continue;
         }
 
-        const existingMapping = await mappingRepo.findOneBy({
-          vehicleTypeId: vehicleType.id,
-          serviceTypeId: serviceType.id,
-        });
-        if (!existingMapping) {
-          await mappingRepo.save(
-            mappingRepo.create({
-              vehicleTypeId: vehicleType.id,
-              serviceTypeId: serviceType.id,
-              sortOrder: mappingIndex,
-            }),
-          );
+        for (const serviceOptionName of availableService.serviceOptions) {
+          const serviceOption = serviceOptionByName.get(serviceOptionName);
+          if (!serviceOption) {
+            continue;
+          }
+
+          const existingAvailability = await availabilityRepo.findOneBy({
+            vehicleTypeId: vehicleType.id,
+            serviceTypeId: serviceType.id,
+            serviceOptionId: serviceOption.id,
+          });
+
+          if (!existingAvailability) {
+            await availabilityRepo.save(
+              availabilityRepo.create({
+                vehicleTypeId: vehicleType.id,
+                serviceTypeId: serviceType.id,
+                serviceOptionId: serviceOption.id,
+              }),
+            );
+          }
         }
       }
     }

@@ -1,13 +1,9 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { ServiceOption } from './service-option.entity';
-import { VehicleServiceMapping } from './vehicle-service-mapping.entity';
+import { VehicleAvailableService } from './vehicle-available-service.entity';
 
 /**
- * A global catalog of services (Body Wash, Normal Service, Full Service).
- * ServiceType is NOT vehicle-specific — its availability per vehicle type
- * is controlled entirely through VehicleServiceMapping, so the same
- * catalog entry can be reused/enabled independently across vehicle types.
+ * A global catalog of service packages, such as Body Wash or Full Service.
  */
 @Entity('service_types')
 export class ServiceType extends BaseEntity {
@@ -15,15 +11,9 @@ export class ServiceType extends BaseEntity {
   @Column({ length: 150 })
   name: string;
 
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
-
-  @Column({ name: 'sort_order', default: 0 })
-  sortOrder: number;
-
-  @OneToMany(() => ServiceOption, (option) => option.serviceType)
-  options: ServiceOption[];
-
-  @OneToMany(() => VehicleServiceMapping, (mapping) => mapping.serviceType)
-  vehicleMappings: VehicleServiceMapping[];
+  @OneToMany(
+    () => VehicleAvailableService,
+    (availableService) => availableService.serviceType,
+  )
+  availableServices: VehicleAvailableService[];
 }

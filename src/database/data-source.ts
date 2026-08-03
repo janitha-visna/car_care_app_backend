@@ -4,7 +4,7 @@ import { VehicleCategory } from '../modules/vehicle-config/entities/vehicle-cate
 import { VehicleType } from '../modules/vehicle-config/entities/vehicle-type.entity';
 import { ServiceType } from '../modules/vehicle-config/entities/service-type.entity';
 import { ServiceOption } from '../modules/vehicle-config/entities/service-option.entity';
-import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicle-service-mapping.entity';
+import { VehicleAvailableService } from '../modules/vehicle-config/entities/vehicle-available-service.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -23,7 +23,7 @@ export const AppDataSource = new DataSource({
     VehicleType,
     ServiceType,
     ServiceOption,
-    VehicleServiceMapping,
+    VehicleAvailableService,
   ],
   synchronize: false,
 });

@@ -13,9 +13,6 @@ export class VehicleCategory extends BaseEntity {
   @Column({ length: 100 })
   name: string;
 
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
-
   @OneToMany(() => VehicleType, (vehicleType) => vehicleType.category)
   vehicleTypes: VehicleType[];
 }

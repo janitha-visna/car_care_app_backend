@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { VehicleCategory } from '../entities/vehicle-category.entity';
 import {
   ServiceOptionDto,
   ServiceTypeDto,
@@ -7,13 +6,8 @@ import {
   VehicleCategoryConfigurationDto,
   VehicleTypeDto,
 } from '../dto/vehicle-category-configuration.dto';
+import { VehicleCategory } from '../entities/vehicle-category.entity';
 
-/**
- * Single responsibility: turn the entity graph (with its junction table
- * and FK columns) into the flat, frontend-facing DTO shape. Keeping this
- * separate from the repository/service means the response contract can
- * evolve without touching query logic, and vice versa.
- */
 @Injectable()
 export class ConfigurationMapper {
   toVehicleCategoriesConfiguration(
@@ -29,65 +23,62 @@ export class ConfigurationMapper {
   toVehicleCategoryConfiguration(
     category: VehicleCategory,
   ): VehicleCategoryConfigurationDto {
-    const vehicleTypes = category.vehicleTypes ?? [];
-
     return {
       categoryId: category.id,
       category: category.name,
-
-      vehicleTypes: vehicleTypes.map((vehicleType) => {
-        return this.toVehicleType(vehicleType);
-      }),
+      vehicleTypes: (category.vehicleTypes ?? []).map((vehicleType) =>
+        this.toVehicleType(vehicleType),
+      ),
     };
   }
 
   private toVehicleType(vehicleType: {
     id: number;
     name: string;
-    serviceMappings: {
-      serviceType: {
-        id: number;
-        name: string;
-        options: { id: number; name: string; required: boolean }[];
-      };
+    availableServices?: {
+      serviceType?: { id: number; name: string };
+      serviceOption?: { id: number; name: string };
     }[];
   }): VehicleTypeDto {
-    const serviceMappings = vehicleType.serviceMappings ?? [];
+    const servicesById = new Map<number, ServiceTypeDto>();
 
-    const services = serviceMappings
-      .filter((mapping) => mapping.serviceType != null)
-      .map((mapping) => this.toServiceType(mapping.serviceType));
+    for (const availableService of vehicleType.availableServices ?? []) {
+      const serviceType = availableService.serviceType;
+      const serviceOption = availableService.serviceOption;
+
+      if (!serviceType || !serviceOption) {
+        continue;
+      }
+
+      let service = servicesById.get(serviceType.id);
+      if (!service) {
+        service = {
+          id: serviceType.id,
+          name: serviceType.name,
+          options: [],
+        };
+        servicesById.set(serviceType.id, service);
+      }
+
+      if (!service.options.some((option) => option.id === serviceOption.id)) {
+        service.options.push(this.toServiceOption(serviceOption));
+      }
+    }
 
     return {
       id: vehicleType.id,
       name: vehicleType.name,
-      services,
-    };
-  }
-
-  private toServiceType(serviceType: {
-    id: number;
-    name: string;
-    options: { id: number; name: string; required: boolean }[];
-  }): ServiceTypeDto {
-    const options = serviceType.options ?? [];
-
-    return {
-      id: serviceType.id,
-      name: serviceType.name,
-      options: options.map((option) => this.toServiceOption(option)),
+      services: Array.from(servicesById.values()),
     };
   }
 
   private toServiceOption(option: {
     id: number;
     name: string;
-    required: boolean;
   }): ServiceOptionDto {
     return {
       id: option.id,
       name: option.name,
-      required: option.required,
     };
   }
 }

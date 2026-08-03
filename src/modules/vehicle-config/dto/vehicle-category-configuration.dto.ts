@@ -7,7 +7,6 @@
 export interface ServiceOptionDto {
   id: number;
   name: string;
-  required: boolean;
 }
 
 export interface ServiceTypeDto {
