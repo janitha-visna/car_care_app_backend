@@ -8,6 +8,7 @@ import { VehicleConfigModule } from './modules/vehicle-config/vehicle-config.mod
 import { ServiceJobModule } from './modules/database/service-job-domain-db/service-job.module';
 import { VehicleModule } from './modules/database/vechile-domain-db/vehicle.module';
 import { CustomerModule } from './modules/database/customer-domain-db/customer.module';
+import { MeterReadingModule } from './modules/database/meter-domain-db/meter-reading.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CustomerModule } from './modules/database/customer-domain-db/customer.m
     ServiceJobModule,
     VehicleModule,
     CustomerModule,
+    MeterReadingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
