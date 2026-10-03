@@ -8,6 +8,7 @@ import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicl
 import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
 import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
 import { Customer } from '../modules/database/customer-domain-db/customer.entity';
+import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -30,6 +31,7 @@ export const AppDataSource = new DataSource({
     ServiceJob,
     Vehicle,
     Customer,
+    CustomerPhoneNumber,
   ],
   synchronize: false,
 });

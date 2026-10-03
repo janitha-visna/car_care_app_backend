@@ -7,6 +7,7 @@ import { buildTypeOrmConfig } from './config/typeorm.config';
 import { VehicleConfigModule } from './modules/vehicle-config/vehicle-config.module';
 import { ServiceJobModule } from './modules/database/service-job-domain-db/service-job.module';
 import { VehicleModule } from './modules/database/vechile-domain-db/vehicle.module';
+import { CustomerModule } from './modules/database/customer-domain-db/customer.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VehicleModule } from './modules/database/vechile-domain-db/vehicle.modu
     VehicleConfigModule,
     ServiceJobModule,
     VehicleModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
