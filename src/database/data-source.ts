@@ -7,10 +7,12 @@ import { ServiceOption } from '../modules/vehicle-config/entities/service-option
 import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicle-service-mapping.entity';
 import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
 import { ServiceJobService } from '../modules/database/service-job-domain-db/service-job-service.entity';
+import { ServiceJobPart } from '../modules/database/service-job-domain-db/service-job-part.entity';
 import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
 import { Customer } from '../modules/database/customer-domain-db/customer.entity';
 import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
 import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
+import { Part } from '../modules/database/part-domain-db/part.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -32,10 +34,12 @@ export const AppDataSource = new DataSource({
     VehicleServiceMapping,
     ServiceJob,
     ServiceJobService,
+    ServiceJobPart,
     Vehicle,
     Customer,
     CustomerPhoneNumber,
     MeterReading,
+    Part,
   ],
   synchronize: false,
 });

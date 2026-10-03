@@ -9,6 +9,7 @@ import { ServiceJobModule } from './modules/database/service-job-domain-db/servi
 import { VehicleModule } from './modules/database/vechile-domain-db/vehicle.module';
 import { CustomerModule } from './modules/database/customer-domain-db/customer.module';
 import { MeterReadingModule } from './modules/database/meter-domain-db/meter-reading.module';
+import { PartModule } from './modules/database/part-domain-db/part.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MeterReadingModule } from './modules/database/meter-domain-db/meter-rea
     VehicleModule,
     CustomerModule,
     MeterReadingModule,
+    PartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
