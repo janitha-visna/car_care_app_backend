@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Vehicle } from '../vechile-domain-db/vehicle.entity';
 import { ServiceJobService } from './service-job-service.entity';
+import { ServiceJobPart } from './service-job-part.entity';
 
 /**
  * ServiceJob entity representing a service job performed on a vehicle.
@@ -48,4 +49,10 @@ export class ServiceJob {
     (serviceJobService) => serviceJobService.serviceJob,
   )
   jobServices!: ServiceJobService[];
+
+  @OneToMany(
+    () => ServiceJobPart,
+    (serviceJobPart) => serviceJobPart.serviceJob,
+  )
+  jobParts!: ServiceJobPart[];
 }
