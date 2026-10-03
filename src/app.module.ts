@@ -5,7 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { buildTypeOrmConfig } from './config/typeorm.config';
 import { VehicleConfigModule } from './modules/vehicle-config/vehicle-config.module';
-import { ServiceJobModule } from './modules/service-job/service-job.module';
+import { ServiceJobModule } from './modules/database/service-job-domain-db/service-job.module';
+import { VehicleModule } from './modules/database/vechile-domain-db/vehicle.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ServiceJobModule } from './modules/service-job/service-job.module';
     }),
     VehicleConfigModule,
     ServiceJobModule,
+    VehicleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

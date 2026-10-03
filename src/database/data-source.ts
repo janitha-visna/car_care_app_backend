@@ -5,8 +5,9 @@ import { VehicleType } from '../modules/vehicle-config/entities/vehicle-type.ent
 import { ServiceType } from '../modules/vehicle-config/entities/service-type.entity';
 import { ServiceOption } from '../modules/vehicle-config/entities/service-option.entity';
 import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicle-service-mapping.entity';
-import { ServiceJob } from '../modules/service-job/entities/service-job.entity';
-import { Vehicle } from '../modules/service-job/entities/vehicle.entity';
+import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
+import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
+import { Customer } from '../modules/database/customer-domain-db/customer.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -28,6 +29,7 @@ export const AppDataSource = new DataSource({
     VehicleServiceMapping,
     ServiceJob,
     Vehicle,
+    Customer,
   ],
   synchronize: false,
 });

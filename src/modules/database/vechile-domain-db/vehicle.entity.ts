@@ -39,7 +39,7 @@ export class Vehicle {
   @Column({ name: 'customer_id', type: 'bigint' })
   customerId!: string;
 
-  @ManyToOne(() => Customer, (customer) => customer.vehicles, {
+  @ManyToOne(() => Customer, {
     nullable: false,
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
