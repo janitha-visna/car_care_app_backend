@@ -6,6 +6,7 @@ import { ServiceType } from '../modules/vehicle-config/entities/service-type.ent
 import { ServiceOption } from '../modules/vehicle-config/entities/service-option.entity';
 import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicle-service-mapping.entity';
 import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
+import { ServiceJobService } from '../modules/database/service-job-domain-db/service-job-service.entity';
 import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
 import { Customer } from '../modules/database/customer-domain-db/customer.entity';
 import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
@@ -30,6 +31,7 @@ export const AppDataSource = new DataSource({
     ServiceOption,
     VehicleServiceMapping,
     ServiceJob,
+    ServiceJobService,
     Vehicle,
     Customer,
     CustomerPhoneNumber,

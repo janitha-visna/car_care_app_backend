@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Vehicle } from '../vechile-domain-db/vehicle.entity';
+import { ServiceJobService } from './service-job-service.entity';
 
 /**
  * ServiceJob entity representing a service job performed on a vehicle.
@@ -40,4 +42,10 @@ export class ServiceJob {
     scale: 2,
   })
   totalCost!: number;
+
+  @OneToMany(
+    () => ServiceJobService,
+    (serviceJobService) => serviceJobService.serviceJob,
+  )
+  jobServices!: ServiceJobService[];
 }
