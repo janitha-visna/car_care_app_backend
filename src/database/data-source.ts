@@ -9,6 +9,7 @@ import { ServiceJob } from '../modules/database/service-job-domain-db/service-jo
 import { ServiceJobService } from '../modules/database/service-job-domain-db/service-job-service.entity';
 import { ServiceJobPart } from '../modules/database/service-job-domain-db/service-job-part.entity';
 import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
+import { VehicleTypeService } from '../modules/database/vechile-domain-db/vehicle-type-service.entity';
 import { Customer } from '../modules/database/customer-domain-db/customer.entity';
 import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
 import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
@@ -36,6 +37,7 @@ export const AppDataSource = new DataSource({
     ServiceJobService,
     ServiceJobPart,
     Vehicle,
+    VehicleTypeService,
     Customer,
     CustomerPhoneNumber,
     MeterReading,
