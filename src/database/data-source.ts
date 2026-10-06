@@ -1,10 +1,5 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { VehicleCategory } from '../modules/vehicle-config/entities/vehicle-category.entity';
-import { VehicleType } from '../modules/vehicle-config/entities/vehicle-type.entity';
-import { ServiceType } from '../modules/vehicle-config/entities/service-type.entity';
-import { ServiceOption } from '../modules/vehicle-config/entities/service-option.entity';
-import { VehicleServiceMapping } from '../modules/vehicle-config/entities/vehicle-service-mapping.entity';
 import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
 import { ServiceJobService } from '../modules/database/service-job-domain-db/service-job-service.entity';
 import { ServiceJobPart } from '../modules/database/service-job-domain-db/service-job-part.entity';
@@ -32,11 +27,6 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD ?? 'postgres',
   database: process.env.DB_NAME ?? 'car_care',
   entities: [
-    VehicleCategory,
-    VehicleType,
-    ServiceType,
-    ServiceOption,
-    VehicleServiceMapping,
     ServiceJob,
     ServiceJobService,
     ServiceJobPart,

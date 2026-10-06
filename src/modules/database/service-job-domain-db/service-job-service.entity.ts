@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceJob } from './service-job.entity';
-import { ServiceType } from '../../vehicle-config/entities/service-type.entity';
+import { Service } from '../service-domain-db/service.entity';
 
 /**
  * ServiceJobService entity representing the service_job_services table.
@@ -50,13 +50,13 @@ export class ServiceJobService {
   @Column({ name: 'service_id', type: 'bigint', nullable: false })
   serviceId!: string;
 
-  @ManyToOne(() => ServiceType, {
+  @ManyToOne(() => Service, {
     nullable: false,
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'service_id' })
-  service!: ServiceType;
+  service!: Service;
 
   // ---------------------------------------------------------------------------
   // Column 4: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)

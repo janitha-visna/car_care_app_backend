@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VehicleType } from './vehicle-type.entity';
-import { ServiceType } from '../../vehicle-config/entities/service-type.entity';
+import { Service } from '../service-domain-db/service.entity';
 
 /**
  * VehicleTypeService entity representing the vehicle_type_services table.
@@ -48,11 +48,11 @@ export class VehicleTypeService {
   @Column({ name: 'service_id', type: 'bigint', nullable: false })
   serviceId!: string;
 
-  @ManyToOne(() => ServiceType, {
+  @ManyToOne(() => Service, {
     nullable: false,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'service_id' })
-  service!: ServiceType;
+  service!: Service;
 }

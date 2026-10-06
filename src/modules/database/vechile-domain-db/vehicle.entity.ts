@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Customer } from '../customer-domain-db/customer.entity';
-import { VehicleType } from '../../vehicle-config/entities/vehicle-type.entity';
+import { VehicleType } from './vehicle-type.entity';
 import { ServiceJob } from '../service-job-domain-db/service-job.entity';
 
 /**
