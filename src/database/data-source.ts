@@ -14,6 +14,7 @@ import { Customer } from '../modules/database/customer-domain-db/customer.entity
 import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
 import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
 import { Part } from '../modules/database/part-domain-db/part.entity';
+import { Component } from '../modules/database/part-domain-db/component.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -42,6 +43,7 @@ export const AppDataSource = new DataSource({
     CustomerPhoneNumber,
     MeterReading,
     Part,
+    Component,
   ],
   synchronize: false,
 });
