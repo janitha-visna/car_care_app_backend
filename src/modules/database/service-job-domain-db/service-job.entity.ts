@@ -19,8 +19,8 @@ import { ServiceJobPart } from './service-job-part.entity';
  */
 @Entity('service_jobs')
 export class ServiceJob {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id!: string;
 
   @Column({ name: 'vehicle_id', type: 'bigint' })
   vehicleId!: string;
