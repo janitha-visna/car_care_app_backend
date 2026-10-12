@@ -15,6 +15,7 @@ import { Customer } from './customer.entity';
  * - id: BIGSERIAL auto-increment Primary Key (unique row identifier)
  * - customer_id: BIGINT FK -> customers.id (ON DELETE CASCADE, ON UPDATE CASCADE, NOT NULL)
  * - phone_number: VARCHAR(20) NOT NULL (stores the customer phone number)
+ * - is_primary: BOOLEAN NOT NULL DEFAULT false (distinguishes primary vs alternative numbers)
  */
 @Entity('customer_phone_numbers')
 export class CustomerPhoneNumber {
@@ -49,4 +50,14 @@ export class CustomerPhoneNumber {
     nullable: false,
   })
   phoneNumber!: string;
+
+  // ---------------------------------------------------------------------------
+  // Field 4: is_primary (BOOLEAN, default: false)
+  // ---------------------------------------------------------------------------
+  @Column({
+    name: 'is_primary',
+    type: 'boolean',
+    default: false,
+  })
+  isPrimary!: boolean;
 }
