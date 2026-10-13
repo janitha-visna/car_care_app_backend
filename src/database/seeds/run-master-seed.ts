@@ -95,7 +95,9 @@ async function runSeed() {
     // -------------------------------------------------------------------------
     console.log('🛠️ Seeding Services...');
     for (const sData of SERVICES_DATA) {
-      let service = await serviceRepo.findOne({ where: { name: sData.name } });
+      const service = await serviceRepo.findOne({
+        where: { name: sData.name },
+      });
       if (!service) {
         await serviceRepo.save(
           serviceRepo.create({
