@@ -156,16 +156,13 @@ export const SERVICES_DATA = [
   {
     name: 'Full Service',
     basePrice: 7500.0,
-    requiredComponents: ['Air Filter', 'Engine Oil Filter', 'Fuel Filter'],
   },
   {
     name: 'Normal Service',
     basePrice: 4500.0,
-    requiredComponents: ['Engine Oil Filter'],
   },
   {
     name: 'Body Wash',
     basePrice: 2000.0,
-    requiredComponents: [], // No physical parts needed
   },
 ];

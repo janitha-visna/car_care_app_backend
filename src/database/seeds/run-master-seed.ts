@@ -5,7 +5,6 @@ import { VehicleType } from '../../modules/database/vechile-domain-db/vehicle-ty
 import { Component } from '../../modules/database/part-domain-db/component.entity';
 import { Part } from '../../modules/database/part-domain-db/part.entity';
 import { Service } from '../../modules/database/service-domain-db/service.entity';
-import { ServiceComponent } from '../../modules/database/service-domain-db/service-component.entity';
 import {
   VEHICLE_CATEGORIES_DATA,
   COMPONENTS_AND_PARTS_DATA,
@@ -26,7 +25,6 @@ async function runSeed() {
     const componentRepo = queryRunner.manager.getRepository(Component);
     const partRepo = queryRunner.manager.getRepository(Part);
     const serviceRepo = queryRunner.manager.getRepository(Service);
-    const serviceCompRepo = queryRunner.manager.getRepository(ServiceComponent);
 
     // -------------------------------------------------------------------------
     // 1. Seed Categories & Vehicle Types
@@ -93,35 +91,18 @@ async function runSeed() {
     }
 
     // -------------------------------------------------------------------------
-    // 3. Seed Services & Service-Component Mappings
+    // 3. Seed Services (Full Service, Normal Service, Body Wash)
     // -------------------------------------------------------------------------
-    console.log('🛠️ Seeding Services & Required Components...');
+    console.log('🛠️ Seeding Services...');
     for (const sData of SERVICES_DATA) {
       let service = await serviceRepo.findOne({ where: { name: sData.name } });
       if (!service) {
-        service = await serviceRepo.save(
+        await serviceRepo.save(
           serviceRepo.create({
             name: sData.name,
             basePrice: sData.basePrice,
           }),
         );
-      }
-
-      for (const reqCompName of sData.requiredComponents) {
-        const comp = componentMap.get(reqCompName);
-        if (comp) {
-          const existingMapping = await serviceCompRepo.findOne({
-            where: { serviceId: service.id, componentId: comp.id },
-          });
-          if (!existingMapping) {
-            await serviceCompRepo.save(
-              serviceCompRepo.create({
-                serviceId: service.id,
-                componentId: comp.id,
-              }),
-            );
-          }
-        }
       }
     }
 
