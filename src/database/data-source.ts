@@ -6,8 +6,6 @@ import { ServiceJobPart } from '../modules/database/service-job-domain-db/servic
 import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
 import { VehicleCategory } from '../modules/database/vechile-domain-db/vehicle-category.entity';
 import { VehicleType } from '../modules/database/vechile-domain-db/vehicle-type.entity';
-import { VehicleTypeService } from '../modules/database/vechile-domain-db/vehicle-type-service.entity';
-import { VehicleTypeComponentPart } from '../modules/database/vechile-domain-db/vehicle-type-component-part.entity';
 import { Customer } from '../modules/database/customer-domain-db/customer.entity';
 import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
 import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
@@ -35,8 +33,6 @@ export const AppDataSource = new DataSource({
     Vehicle,
     VehicleCategory,
     VehicleType,
-    VehicleTypeService,
-    VehicleTypeComponentPart,
     Customer,
     CustomerPhoneNumber,
     MeterReading,
