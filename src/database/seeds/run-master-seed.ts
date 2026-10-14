@@ -102,7 +102,6 @@ async function runSeed() {
         await serviceRepo.save(
           serviceRepo.create({
             name: sData.name,
-            basePrice: sData.basePrice,
           }),
         );
       }

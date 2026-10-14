@@ -155,14 +155,11 @@ export const COMPONENTS_AND_PARTS_DATA = [
 export const SERVICES_DATA = [
   {
     name: 'Full Service',
-    basePrice: 7500.0,
   },
   {
     name: 'Normal Service',
-    basePrice: 4500.0,
   },
   {
     name: 'Body Wash',
-    basePrice: 2000.0,
   },
 ];

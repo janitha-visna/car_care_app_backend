@@ -6,7 +6,6 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
  * Columns:
  * - id: BIGSERIAL auto-increment Primary Key (unique row, always present)
  * - name: VARCHAR(100) NOT NULL, UNIQUE (no duplicate services)
- * - base_price: NUMERIC(10, 2) NOT NULL (exact money, every service must have a price)
  */
 @Entity('services')
 export class Service {
@@ -28,20 +27,4 @@ export class Service {
     nullable: false,
   })
   name!: string;
-
-  // ---------------------------------------------------------------------------
-  // Column 3: base_price (NUMERIC(10, 2), NOT NULL)
-  // ---------------------------------------------------------------------------
-  @Column({
-    name: 'base_price',
-    type: 'numeric',
-    precision: 10,
-    scale: 2,
-    nullable: false,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) => (value != null ? parseFloat(value) : 0),
-    },
-  })
-  basePrice!: number;
 }
