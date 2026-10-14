@@ -12,6 +12,7 @@ import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.
 import { Part } from '../modules/database/part-domain-db/part.entity';
 import { Component } from '../modules/database/part-domain-db/component.entity';
 import { Service } from '../modules/database/service-domain-db/service.entity';
+import { ServicePrice } from '../modules/database/service-domain-db/service-price.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -38,6 +39,7 @@ export const AppDataSource = new DataSource({
     Part,
     Component,
     Service,
+    ServicePrice,
   ],
   synchronize: false,
 });

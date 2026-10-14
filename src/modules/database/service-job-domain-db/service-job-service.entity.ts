@@ -59,7 +59,24 @@ export class ServiceJobService {
   service!: Service;
 
   // ---------------------------------------------------------------------------
-  // Column 4: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+  // Column 4: unit_price (NUMERIC(10, 2), NOT NULL) - Price snapshot at time of job
+  // ---------------------------------------------------------------------------
+  @Column({
+    name: 'unit_price',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => (value != null ? parseFloat(value) : 0),
+    },
+  })
+  unitPrice!: number;
+
+  // ---------------------------------------------------------------------------
+  // Column 5: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
   // ---------------------------------------------------------------------------
   @CreateDateColumn({
     name: 'created_at',
