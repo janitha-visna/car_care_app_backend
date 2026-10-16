@@ -11,8 +11,8 @@ import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/cust
 import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
 import { Part } from '../modules/database/part-domain-db/part.entity';
 import { Component } from '../modules/database/part-domain-db/component.entity';
-import { Service } from '../modules/database/service-domain-db/service.entity';
-import { ServicePrice } from '../modules/database/service-domain-db/service-price.entity';
+import { Service } from '../modules/database/service-domain-db/entities/service.entity';
+import { ServicePrice } from '../modules/database/service-domain-db/entities/service-price.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept

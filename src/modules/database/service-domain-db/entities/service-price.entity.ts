@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Service } from './service.entity';
-import { VehicleType } from '../vechile-domain-db/vehicle-type.entity';
+import { VehicleType } from '../../vechile-domain-db/vehicle-type.entity';
 
 /**
  * ServicePrice entity representing price tiers for services based on vehicle types.

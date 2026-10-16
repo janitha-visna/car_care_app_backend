@@ -4,7 +4,7 @@ import { VehicleCategory } from '../../modules/database/vechile-domain-db/vehicl
 import { VehicleType } from '../../modules/database/vechile-domain-db/vehicle-type.entity';
 import { Component } from '../../modules/database/part-domain-db/component.entity';
 import { Part } from '../../modules/database/part-domain-db/part.entity';
-import { Service } from '../../modules/database/service-domain-db/service.entity';
+import { Service } from '../../modules/database/service-domain-db/entities/service.entity';
 import {
   VEHICLE_CATEGORIES_DATA,
   COMPONENTS_AND_PARTS_DATA,

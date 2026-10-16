@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceJob } from './service-job.entity';
-import { Service } from '../service-domain-db/service.entity';
+import { Service } from '../service-domain-db/entities/service.entity';
 
 /**
  * ServiceJobService entity representing the service_job_services table.
