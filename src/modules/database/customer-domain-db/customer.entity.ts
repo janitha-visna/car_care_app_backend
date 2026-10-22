@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CustomerPhoneNumber } from './customer-phone-number.entity';
 
 /**
  * Customer entity representing the customers table.
@@ -25,4 +26,10 @@ export class Customer {
     nullable: false,
   })
   name!: string;
+
+  // ---------------------------------------------------------------------------
+  // Relations (Inverse sides)
+  // ---------------------------------------------------------------------------
+  @OneToMany(() => CustomerPhoneNumber, (phone) => phone.customer)
+  phoneNumbers!: CustomerPhoneNumber[];
 }
