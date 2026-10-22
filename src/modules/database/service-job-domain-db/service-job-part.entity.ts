@@ -10,6 +10,11 @@ import {
 import { ServiceJob } from './service-job.entity';
 import { Part } from '../part-domain-db/part.entity';
 
+export enum SupplySource {
+  SHOP_SUPPLIED = 'SHOP_SUPPLIED',
+  CUSTOMER_SUPPLIED = 'CUSTOMER_SUPPLIED',
+}
+
 /**
  * ServiceJobPart entity representing the service_job_parts table in the service job domain.
  * Links parts used/replaced to a specific service job.
@@ -18,6 +23,7 @@ import { Part } from '../part-domain-db/part.entity';
  * - id: BIGSERIAL auto-increment Primary Key (unique row, always present)
  * - job_id: BIGINT FK -> service_jobs.id (ON DELETE CASCADE, ON UPDATE CASCADE, NOT NULL)
  * - part_id: BIGINT FK -> parts.id (ON DELETE RESTRICT, ON UPDATE CASCADE, NOT NULL)
+ * - supply_source: ENUM ('SHOP_SUPPLIED', 'CUSTOMER_SUPPLIED') NOT NULL DEFAULT 'SHOP_SUPPLIED'
  * - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP (NOT NULL)
  */
 @Entity('service_job_parts')
@@ -59,7 +65,19 @@ export class ServiceJobPart {
   part!: Part;
 
   // ---------------------------------------------------------------------------
-  // Column 4: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+  // Column 4: supply_source (ENUM: 'SHOP_SUPPLIED' | 'CUSTOMER_SUPPLIED')
+  // ---------------------------------------------------------------------------
+  @Column({
+    name: 'supply_source',
+    type: 'enum',
+    enum: SupplySource,
+    default: SupplySource.SHOP_SUPPLIED,
+    nullable: false,
+  })
+  supplySource!: SupplySource;
+
+  // ---------------------------------------------------------------------------
+  // Column 5: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
   // ---------------------------------------------------------------------------
   @CreateDateColumn({
     name: 'created_at',
