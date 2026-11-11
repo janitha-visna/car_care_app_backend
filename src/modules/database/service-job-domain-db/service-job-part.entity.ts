@@ -15,6 +15,15 @@ export enum SupplySource {
   CUSTOMER_SUPPLIED = 'CUSTOMER_SUPPLIED',
 }
 
+export enum PartUnit {
+  UNIT = 'UNIT',
+  LITER = 'LITER',
+  ML = 'ML',
+  BOTTLE = 'BOTTLE',
+  CAN = 'CAN',
+  PACK = 'PACK',
+}
+
 /**
  * ServiceJobPart entity representing the service_job_parts table in the service job domain.
  * Links parts used/replaced to a specific service job.
@@ -24,6 +33,8 @@ export enum SupplySource {
  * - job_id: BIGINT FK -> service_jobs.id (ON DELETE CASCADE, ON UPDATE CASCADE, NOT NULL)
  * - part_id: BIGINT FK -> parts.id (ON DELETE RESTRICT, ON UPDATE CASCADE, NOT NULL)
  * - supply_source: ENUM ('SHOP_SUPPLIED', 'CUSTOMER_SUPPLIED') NOT NULL DEFAULT 'SHOP_SUPPLIED'
+ * - quantity: NUMERIC(10, 2) NOT NULL DEFAULT 1 (supports decimals like 3.5 liters and integers like 1 filter)
+ * - unit: ENUM ('UNIT', 'LITER', 'ML', 'BOTTLE', 'CAN', 'PACK') NOT NULL DEFAULT 'UNIT'
  * - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP (NOT NULL)
  */
 @Entity('service_job_parts')
@@ -77,7 +88,36 @@ export class ServiceJobPart {
   supplySource!: SupplySource;
 
   // ---------------------------------------------------------------------------
-  // Column 5: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+  // Column 5: quantity (NUMERIC(10, 2), NOT NULL, DEFAULT 1)
+  // ---------------------------------------------------------------------------
+  @Column({
+    name: 'quantity',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    default: 1,
+    nullable: false,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => (value != null ? parseFloat(value) : 1),
+    },
+  })
+  quantity!: number;
+
+  // ---------------------------------------------------------------------------
+  // Column 6: unit (ENUM: 'UNIT' | 'LITER' | 'ML' | 'BOTTLE' | 'CAN' | 'PACK')
+  // ---------------------------------------------------------------------------
+  @Column({
+    name: 'unit',
+    type: 'enum',
+    enum: PartUnit,
+    default: PartUnit.UNIT,
+    nullable: false,
+  })
+  unit!: PartUnit;
+
+  // ---------------------------------------------------------------------------
+  // Column 7: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
   // ---------------------------------------------------------------------------
   @CreateDateColumn({
     name: 'created_at',
