@@ -1,10 +1,18 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { VehicleCategory } from '../modules/vehicle-config/entities/vehicle-category.entity';
-import { VehicleType } from '../modules/vehicle-config/entities/vehicle-type.entity';
-import { ServiceType } from '../modules/vehicle-config/entities/service-type.entity';
-import { ServiceOption } from '../modules/vehicle-config/entities/service-option.entity';
-import { VehicleAvailableService } from '../modules/vehicle-config/entities/vehicle-available-service.entity';
+import { ServiceJob } from '../modules/database/service-job-domain-db/service-job.entity';
+import { ServiceJobService } from '../modules/database/service-job-domain-db/service-job-service.entity';
+import { ServiceJobPart } from '../modules/database/service-job-domain-db/service-job-part.entity';
+import { Vehicle } from '../modules/database/vechile-domain-db/vehicle.entity';
+import { VehicleCategory } from '../modules/database/vechile-domain-db/vehicle-category.entity';
+import { VehicleType } from '../modules/database/vechile-domain-db/vehicle-type.entity';
+import { Customer } from '../modules/database/customer-domain-db/customer.entity';
+import { CustomerPhoneNumber } from '../modules/database/customer-domain-db/customer-phone-number.entity';
+import { MeterReading } from '../modules/database/meter-domain-db/meter-reading.entity';
+import { Part } from '../modules/database/part-domain-db/part.entity';
+import { Component } from '../modules/database/part-domain-db/component.entity';
+import { Service } from '../modules/database/service-domain-db/entities/service.entity';
+import { ServicePrice } from '../modules/database/service-domain-db/entities/service-price.entity';
 
 /**
  * Standalone DataSource for CLI usage (seeding, future migrations) — kept
@@ -19,11 +27,19 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD ?? 'postgres',
   database: process.env.DB_NAME ?? 'car_care',
   entities: [
+    ServiceJob,
+    ServiceJobService,
+    ServiceJobPart,
+    Vehicle,
     VehicleCategory,
     VehicleType,
-    ServiceType,
-    ServiceOption,
-    VehicleAvailableService,
+    Customer,
+    CustomerPhoneNumber,
+    MeterReading,
+    Part,
+    Component,
+    Service,
+    ServicePrice,
   ],
   synchronize: false,
 });
