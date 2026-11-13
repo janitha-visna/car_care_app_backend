@@ -1,4 +1,21 @@
 // src/database/seeds/initial-master-data.ts
+import { MeasurementType } from '../../modules/database/part-domain-db/part-measurement-option.entity';
+
+export interface SeedMeasurementOption {
+  type: MeasurementType;
+  unit: string;
+  allowDecimal: boolean;
+}
+
+export interface SeedPartItem {
+  name: string;
+  measurementOptions: SeedMeasurementOption[];
+}
+
+export interface SeedComponentItem {
+  componentName: string;
+  parts: SeedPartItem[];
+}
 
 export const VEHICLE_CATEGORIES_DATA = [
   {
@@ -94,24 +111,74 @@ export const VEHICLE_CATEGORIES_DATA = [
   },
 ];
 
-export const COMPONENTS_AND_PARTS_DATA = [
+export const COMPONENTS_AND_PARTS_DATA: SeedComponentItem[] = [
+  {
+    componentName: 'Engine Oil',
+    parts: [
+      {
+        name: 'Castrol',
+        measurementOptions: [
+          {
+            type: MeasurementType.CAN,
+            unit: 'Cans',
+            allowDecimal: false,
+          },
+        ],
+      },
+      {
+        name: 'Mobil',
+        measurementOptions: [
+          {
+            type: MeasurementType.CAN,
+            unit: 'Cans',
+            allowDecimal: false,
+          },
+        ],
+      },
+      {
+        name: 'DS40',
+        measurementOptions: [
+          {
+            type: MeasurementType.LOOSE,
+            unit: 'Litres',
+            allowDecimal: true,
+          },
+        ],
+      },
+    ],
+  },
   {
     componentName: 'Air Filter',
     parts: [
       {
-        partNumber: 'AF-DENSO-STD',
-        brand: 'Denso',
-        name: 'Standard Air Filter Element',
+        name: 'Denso',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
       {
-        partNumber: 'AF-TOYOTA-OEM',
-        brand: 'Toyota Genuine',
-        name: 'Toyota OEM Air Filter',
+        name: 'Toyota Genuine',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
       {
-        partNumber: 'AF-BOSCH-HD',
-        brand: 'Bosch',
-        name: 'Heavy Duty Air Filter',
+        name: 'Bosch',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
     ],
   },
@@ -119,19 +186,34 @@ export const COMPONENTS_AND_PARTS_DATA = [
     componentName: 'Engine Oil Filter',
     parts: [
       {
-        partNumber: 'OF-DENSO-MINI',
-        brand: 'Denso',
-        name: 'Spin-on Oil Filter Mini',
+        name: 'Denso',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
       {
-        partNumber: 'OF-TOYOTA-STD',
-        brand: 'Toyota Genuine',
-        name: 'Standard Oil Filter C-110',
+        name: 'Toyota Genuine',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
       {
-        partNumber: 'OF-FLEETGUARD-HD',
-        brand: 'Fleetguard',
-        name: 'Commercial Heavy Duty Oil Filter',
+        name: 'Fleetguard',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
     ],
   },
@@ -139,14 +221,24 @@ export const COMPONENTS_AND_PARTS_DATA = [
     componentName: 'Fuel Filter',
     parts: [
       {
-        partNumber: 'FF-BOSCH-STD',
-        brand: 'Bosch',
-        name: 'Standard Inline Fuel Filter',
+        name: 'Bosch',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
       {
-        partNumber: 'FF-DENSO-DIESEL',
-        brand: 'Denso',
-        name: 'Diesel Fuel Filter Assembly',
+        name: 'Denso',
+        measurementOptions: [
+          {
+            type: MeasurementType.PIECE,
+            unit: 'Pieces',
+            allowDecimal: false,
+          },
+        ],
       },
     ],
   },

@@ -1,7 +1,14 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Part } from './part.entity';
 
 /**
- * Component entity representing the components table in the parts/components domain.
+ * Component entity representing the components (products) table in the parts/components domain.
  *
  * Columns:
  * - id: BIGSERIAL auto-increment Primary Key (unique row, always present)
@@ -27,4 +34,10 @@ export class Component {
     nullable: false,
   })
   name!: string;
+
+  // ---------------------------------------------------------------------------
+  // Relations (Inverse sides)
+  // ---------------------------------------------------------------------------
+  @OneToMany(() => Part, (part) => part.component)
+  parts!: Part[];
 }

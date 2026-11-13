@@ -4,21 +4,24 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Component } from './component.entity';
+import { PartMeasurementOption } from './part-measurement-option.entity';
 
 /**
- * Part entity representing the parts catalog table.
+ * Part entity representing the parts/brands catalog table.
  *
  * Columns:
  * - id: BIGSERIAL auto-increment Primary Key (unique row)
  * - component_id: BIGINT FK -> components.id (ON DELETE RESTRICT, ON UPDATE CASCADE, NOT NULL)
- * - part_number: VARCHAR(100) NOT NULL (part numbers can include letters, hyphens)
- * - brand: VARCHAR(100) NOT NULL (brand names are short)
- * - name: VARCHAR(255) NOT NULL (display names can be long)
+ * - name: VARCHAR(255) NOT NULL (part/brand name e.g. Castrol, Mobil, DS40, Denso)
  */
 @Entity('parts')
+@Index('idx_parts_component_name_unique', ['componentId', 'name'], {
+  unique: true,
+})
 export class Part {
   // ---------------------------------------------------------------------------
   // Column 1: id (BIGSERIAL / Auto-increment Primary Key)
@@ -33,7 +36,7 @@ export class Part {
   @Column({ name: 'component_id', type: 'bigint', nullable: false })
   componentId!: string;
 
-  @ManyToOne(() => Component, {
+  @ManyToOne(() => Component, (component) => component.parts, {
     nullable: false,
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
@@ -42,29 +45,7 @@ export class Part {
   component!: Component;
 
   // ---------------------------------------------------------------------------
-  // Column 3: part_number (VARCHAR(100), NOT NULL)
-  // ---------------------------------------------------------------------------
-  @Column({
-    name: 'part_number',
-    type: 'varchar',
-    length: 100,
-    nullable: false,
-  })
-  partNumber!: string;
-
-  // ---------------------------------------------------------------------------
-  // Column 4: brand (VARCHAR(100), NOT NULL)
-  // ---------------------------------------------------------------------------
-  @Column({
-    name: 'brand',
-    type: 'varchar',
-    length: 100,
-    nullable: false,
-  })
-  brand!: string;
-
-  // ---------------------------------------------------------------------------
-  // Column 5: name (VARCHAR(255), NOT NULL)
+  // Column 3: name (VARCHAR(255), NOT NULL)
   // ---------------------------------------------------------------------------
   @Column({
     name: 'name',
@@ -73,4 +54,12 @@ export class Part {
     nullable: false,
   })
   name!: string;
+
+  // ---------------------------------------------------------------------------
+  // Relations (Inverse sides)
+  // ---------------------------------------------------------------------------
+  @OneToMany(() => PartMeasurementOption, (option) => option.part, {
+    cascade: true,
+  })
+  measurementOptions!: PartMeasurementOption[];
 }

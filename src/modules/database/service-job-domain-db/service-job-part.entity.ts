@@ -9,32 +9,24 @@ import {
 } from 'typeorm';
 import { ServiceJob } from './service-job.entity';
 import { Part } from '../part-domain-db/part.entity';
+import { PartMeasurementOption } from '../part-domain-db/part-measurement-option.entity';
 
 export enum SupplySource {
   SHOP_SUPPLIED = 'SHOP_SUPPLIED',
   CUSTOMER_SUPPLIED = 'CUSTOMER_SUPPLIED',
 }
 
-export enum PartUnit {
-  UNIT = 'UNIT',
-  LITER = 'LITER',
-  ML = 'ML',
-  BOTTLE = 'BOTTLE',
-  CAN = 'CAN',
-  PACK = 'PACK',
-}
-
 /**
  * ServiceJobPart entity representing the service_job_parts table in the service job domain.
- * Links parts used/replaced to a specific service job.
+ * Links parts used/replaced and their selected measurement option to a specific service job.
  *
  * Columns:
  * - id: BIGSERIAL auto-increment Primary Key (unique row, always present)
  * - job_id: BIGINT FK -> service_jobs.id (ON DELETE CASCADE, ON UPDATE CASCADE, NOT NULL)
  * - part_id: BIGINT FK -> parts.id (ON DELETE RESTRICT, ON UPDATE CASCADE, NOT NULL)
+ * - measurement_option_id: BIGINT FK -> part_measurement_options.id (ON DELETE RESTRICT, ON UPDATE CASCADE, NOT NULL)
  * - supply_source: ENUM ('SHOP_SUPPLIED', 'CUSTOMER_SUPPLIED') NOT NULL DEFAULT 'SHOP_SUPPLIED'
  * - quantity: NUMERIC(10, 2) NOT NULL DEFAULT 1 (supports decimals like 3.5 liters and integers like 1 filter)
- * - unit: ENUM ('UNIT', 'LITER', 'ML', 'BOTTLE', 'CAN', 'PACK') NOT NULL DEFAULT 'UNIT'
  * - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP (NOT NULL)
  */
 @Entity('service_job_parts')
@@ -76,7 +68,22 @@ export class ServiceJobPart {
   part!: Part;
 
   // ---------------------------------------------------------------------------
-  // Column 4: supply_source (ENUM: 'SHOP_SUPPLIED' | 'CUSTOMER_SUPPLIED')
+  // Column 4: measurement_option_id (BIGINT FK -> part_measurement_options.id)
+  // ---------------------------------------------------------------------------
+  @Index('idx_service_job_parts_measurement_option_id')
+  @Column({ name: 'measurement_option_id', type: 'bigint', nullable: false })
+  measurementOptionId!: string;
+
+  @ManyToOne(() => PartMeasurementOption, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'measurement_option_id' })
+  measurementOption!: PartMeasurementOption;
+
+  // ---------------------------------------------------------------------------
+  // Column 5: supply_source (ENUM: 'SHOP_SUPPLIED' | 'CUSTOMER_SUPPLIED')
   // ---------------------------------------------------------------------------
   @Column({
     name: 'supply_source',
@@ -88,7 +95,7 @@ export class ServiceJobPart {
   supplySource!: SupplySource;
 
   // ---------------------------------------------------------------------------
-  // Column 5: quantity (NUMERIC(10, 2), NOT NULL, DEFAULT 1)
+  // Column 6: quantity (NUMERIC(10, 2), NOT NULL, DEFAULT 1)
   // ---------------------------------------------------------------------------
   @Column({
     name: 'quantity',
@@ -103,18 +110,6 @@ export class ServiceJobPart {
     },
   })
   quantity!: number;
-
-  // ---------------------------------------------------------------------------
-  // Column 6: unit (ENUM: 'UNIT' | 'LITER' | 'ML' | 'BOTTLE' | 'CAN' | 'PACK')
-  // ---------------------------------------------------------------------------
-  @Column({
-    name: 'unit',
-    type: 'enum',
-    enum: PartUnit,
-    default: PartUnit.UNIT,
-    nullable: false,
-  })
-  unit!: PartUnit;
 
   // ---------------------------------------------------------------------------
   // Column 7: created_at (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)

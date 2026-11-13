@@ -4,6 +4,7 @@ import { VehicleCategory } from '../../modules/database/vechile-domain-db/vehicl
 import { VehicleType } from '../../modules/database/vechile-domain-db/vehicle-type.entity';
 import { Component } from '../../modules/database/part-domain-db/component.entity';
 import { Part } from '../../modules/database/part-domain-db/part.entity';
+import { PartMeasurementOption } from '../../modules/database/part-domain-db/part-measurement-option.entity';
 import { Service } from '../../modules/database/service-domain-db/entities/service.entity';
 import {
   VEHICLE_CATEGORIES_DATA,
@@ -24,6 +25,9 @@ async function runSeed() {
     const typeRepo = queryRunner.manager.getRepository(VehicleType);
     const componentRepo = queryRunner.manager.getRepository(Component);
     const partRepo = queryRunner.manager.getRepository(Part);
+    const measurementOptionRepo = queryRunner.manager.getRepository(
+      PartMeasurementOption,
+    );
     const serviceRepo = queryRunner.manager.getRepository(Service);
 
     // -------------------------------------------------------------------------
@@ -57,10 +61,9 @@ async function runSeed() {
     }
 
     // -------------------------------------------------------------------------
-    // 2. Seed Components & Parts
+    // 2. Seed Components, Parts & Measurement Options
     // -------------------------------------------------------------------------
-    console.log('🔧 Seeding Components & Parts...');
-    const componentMap = new Map<string, Component>();
+    console.log('🔧 Seeding Components, Parts & Measurement Options...');
 
     for (const compData of COMPONENTS_AND_PARTS_DATA) {
       let component = await componentRepo.findOne({
@@ -71,21 +74,43 @@ async function runSeed() {
           componentRepo.create({ name: compData.componentName }),
         );
       }
-      componentMap.set(component.name, component);
 
       for (const pData of compData.parts) {
-        const existingPart = await partRepo.findOne({
-          where: { partNumber: pData.partNumber },
+        let part = await partRepo.findOne({
+          where: { componentId: component.id, name: pData.name },
         });
-        if (!existingPart) {
-          await partRepo.save(
+
+        if (!part) {
+          part = await partRepo.save(
             partRepo.create({
-              partNumber: pData.partNumber,
-              brand: pData.brand,
               name: pData.name,
               componentId: component.id,
             }),
           );
+        }
+
+        for (const optData of pData.measurementOptions) {
+          const existingOption = await measurementOptionRepo.findOne({
+            where: {
+              partId: part.id,
+              type: optData.type,
+              unit: optData.unit,
+            },
+          });
+
+          if (!existingOption) {
+            await measurementOptionRepo.save(
+              measurementOptionRepo.create({
+                partId: part.id,
+                type: optData.type,
+                unit: optData.unit,
+                allowDecimal: optData.allowDecimal,
+              }),
+            );
+          } else if (existingOption.allowDecimal !== optData.allowDecimal) {
+            existingOption.allowDecimal = optData.allowDecimal;
+            await measurementOptionRepo.save(existingOption);
+          }
         }
       }
     }
