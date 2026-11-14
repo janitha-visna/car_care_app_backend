@@ -1,4 +1,5 @@
 // src/database/seeds/run-master-seed.ts
+import { Not, In } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { VehicleCategory } from '../../modules/database/vechile-domain-db/vehicle-category.entity';
 import { VehicleType } from '../../modules/database/vechile-domain-db/vehicle-type.entity';
@@ -15,6 +16,9 @@ import {
 async function runSeed() {
   console.log('🚀 Initializing database connection for seeding...');
   await AppDataSource.initialize();
+
+  console.log('🔄 Synchronizing database schema...');
+  await AppDataSource.synchronize();
 
   const queryRunner = AppDataSource.createQueryRunner();
   await queryRunner.connect();
@@ -73,6 +77,14 @@ async function runSeed() {
         component = await componentRepo.save(
           componentRepo.create({ name: compData.componentName }),
         );
+      }
+
+      const validPartNames = compData.parts.map((p) => p.name);
+      if (validPartNames.length > 0) {
+        await partRepo.delete({
+          componentId: component.id,
+          name: Not(In(validPartNames)),
+        });
       }
 
       for (const pData of compData.parts) {
