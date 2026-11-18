@@ -21,7 +21,8 @@
     "seed:vehicle-config": "ts-node -r tsconfig-paths/register src/database/seeds/run-vehicle-config-seed.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/run-master-seed.ts",
     "seed:prices": "ts-node -r tsconfig-paths/register src/database/seeds/run-service-prices-seed.ts",
-    "seed:mock": "ts-node -r tsconfig-paths/register src/database/seeds/run-mock-test-seed.ts"
+    "seed:mock": "ts-node -r tsconfig-paths/register src/database/seeds/run-mock-test-seed.ts",
+    "seed:faker": "ts-node -r tsconfig-paths/register src/database/seeds/run-faker-seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^10.6.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",

@@ -1,61 +1,187 @@
 // src/database/seeds/run-mock-test-seed.ts
 import { AppDataSource } from '../data-source';
-import { VehicleCategory } from '../../modules/database/vechile-domain-db/vehicle-category.entity';
 import { VehicleType } from '../../modules/database/vechile-domain-db/vehicle-type.entity';
 import { Vehicle } from '../../modules/database/vechile-domain-db/vehicle.entity';
-import { Customer } from '../../modules/database/customer-domain-db/customer.entity';
-import { CustomerPhoneNumber } from '../../modules/database/customer-domain-db/customer-phone-number.entity';
 import { Service } from '../../modules/database/service-domain-db/entities/service.entity';
 import { ServicePrice } from '../../modules/database/service-domain-db/entities/service-price.entity';
+import { Component } from '../../modules/database/part-domain-db/component.entity';
+import { MeasurementType } from '../../modules/database/part-domain-db/part-measurement-option.entity';
+import { ServiceJob } from '../../modules/database/service-job-domain-db/service-job.entity';
+import { ServiceJobDomainService } from '../../modules/database/service-job-domain-db/services/service-job.service';
+import { CreateServiceJobDto } from '../../modules/database/service-job-domain-db/dto/create-service-job.dto';
 
-interface MockVehicleFixture {
-  numberPlate: string;
-  categoryName: string;
-  vehicleTypeName: string;
-  customerName: string;
-  phoneNumbers: Array<{ phoneNumber: string; isPrimary: boolean }>;
-  servicePrices: Record<string, number>;
+interface MockProductFixture {
+  productName: string;
+  brandName: string;
+  measurementType: MeasurementType;
+  quantity: number;
 }
 
-const MOCK_VEHICLES: MockVehicleFixture[] = [
+interface MockServiceJobFixture {
+  numberPlate: string;
+  vehicleTypeName: string;
+  customerName: string;
+  phones: Array<{ number: string; isPrimary: boolean }>;
+  jobDate: string;
+  meterReading: number;
+  nextMeterReading: number;
+  servicePackageName: string;
+  products: MockProductFixture[];
+  extraPartsCost: number;
+}
+
+const MOCK_SERVICE_JOBS: MockServiceJobFixture[] = [
+  // 1. CAB-1234 — Visit #1 (First-time registration: sends vehicle.id = null, customer.id = null)
   {
     numberPlate: 'CAB-1234',
-    categoryName: 'Car',
     vehicleTypeName: 'Regular Car',
     customerName: 'Kasun Perera',
-    phoneNumbers: [
-      { phoneNumber: '0771234567', isPrimary: true },
-      { phoneNumber: '0112345678', isPrimary: false },
+    phones: [
+      { number: '0771234567', isPrimary: true },
+      { number: '0112345678', isPrimary: false },
     ],
-    servicePrices: {
-      'Full Service': 6000,
-      'Normal Service': 5500,
-      'Body Wash': 1000,
-    },
+    jobDate: '2026-08-10',
+    meterReading: 40000,
+    nextMeterReading: 45000,
+    servicePackageName: 'Normal Service',
+    products: [
+      {
+        productName: 'Engine Oil',
+        brandName: 'Castrol',
+        measurementType: MeasurementType.CAN,
+        quantity: 1,
+      },
+      {
+        productName: 'Engine Oil Filter',
+        brandName: 'Toyota Genuine',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+    ],
+    extraPartsCost: 3000,
   },
+
+  // 2. CAB-1234 — Visit #2 (Returning vehicle & customer: reuses existing vehicle.id & customer.id)
+  {
+    numberPlate: 'CAB-1234',
+    vehicleTypeName: 'Regular Car',
+    customerName: 'Kasun Perera',
+    phones: [
+      { number: '0771234567', isPrimary: true },
+      { number: '0112345678', isPrimary: false },
+    ],
+    jobDate: '2026-11-17',
+    meterReading: 45000,
+    nextMeterReading: 50000,
+    servicePackageName: 'Full Service',
+    products: [
+      {
+        productName: 'Engine Oil',
+        brandName: 'DS40',
+        measurementType: MeasurementType.LOOSE,
+        quantity: 3.5,
+      },
+      {
+        productName: 'Air Filter',
+        brandName: 'Denso',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+      {
+        productName: 'Engine Oil Filter',
+        brandName: 'Toyota Genuine',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+    ],
+    extraPartsCost: 4500,
+  },
+
+  // 3. CAB-1235 — Similar plate prefix to CAB-1234 (for testing /vehicles/lookup suggestions)
+  {
+    numberPlate: 'CAB-1235',
+    vehicleTypeName: 'Regular Car',
+    customerName: 'amal Jayasinghe',
+    phones: [{ number: '0712233445', isPrimary: true }],
+    jobDate: '2026-10-05',
+    meterReading: 62000,
+    nextMeterReading: 67000,
+    servicePackageName: 'Full Service',
+    products: [
+      {
+        productName: 'Engine Oil',
+        brandName: 'Mobil',
+        measurementType: MeasurementType.CAN,
+        quantity: 1,
+      },
+      {
+        productName: 'Fuel Filter',
+        brandName: 'Bosch',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+    ],
+    extraPartsCost: 3800,
+  },
+
+  // 4. CAA-9988 — Small Car
   {
     numberPlate: 'CAA-9988',
-    categoryName: 'Car',
     vehicleTypeName: 'Small Car',
     customerName: 'Nimal Silva',
-    phoneNumbers: [{ phoneNumber: '0719876543', isPrimary: true }],
-    servicePrices: {
-      'Full Service': 4500,
-      'Normal Service': 3500,
-      'Body Wash': 800,
-    },
+    phones: [{ number: '0719876543', isPrimary: true }],
+    jobDate: '2026-11-01',
+    meterReading: 28500,
+    nextMeterReading: 33500,
+    servicePackageName: 'Normal Service',
+    products: [
+      {
+        productName: 'Engine Oil',
+        brandName: 'Castrol',
+        measurementType: MeasurementType.CAN,
+        quantity: 1,
+      },
+      {
+        productName: 'Engine Oil Filter',
+        brandName: 'Denso',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+    ],
+    extraPartsCost: 2200,
   },
+
+  // 5. DAG-4567 — Double Cab (Visit #1)
   {
     numberPlate: 'DAG-4567',
-    categoryName: 'Cab',
     vehicleTypeName: 'Double Cab',
     customerName: 'Ruwan Fernando',
-    phoneNumbers: [{ phoneNumber: '0765554433', isPrimary: true }],
-    servicePrices: {
-      'Full Service': 8500,
-      'Normal Service': 6500,
-      'Body Wash': 1500,
-    },
+    phones: [{ number: '0765554433', isPrimary: true }],
+    jobDate: '2026-09-20',
+    meterReading: 85000,
+    nextMeterReading: 90000,
+    servicePackageName: 'Full Service',
+    products: [
+      {
+        productName: 'Engine Oil',
+        brandName: 'DS40',
+        measurementType: MeasurementType.LOOSE,
+        quantity: 6.5,
+      },
+      {
+        productName: 'Fuel Filter',
+        brandName: 'Denso',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+      {
+        productName: 'Air Filter',
+        brandName: 'Bosch',
+        measurementType: MeasurementType.PIECE,
+        quantity: 1,
+      },
+    ],
+    extraPartsCost: 6500,
   },
 ];
 
@@ -63,126 +189,175 @@ async function runMockTestSeed() {
   console.log('🚀 Initializing database connection for mock test seeding...');
   await AppDataSource.initialize();
 
-  const queryRunner = AppDataSource.createQueryRunner();
-  await queryRunner.connect();
-  await queryRunner.startTransaction();
-
   try {
-    const categoryRepo = queryRunner.manager.getRepository(VehicleCategory);
-    const typeRepo = queryRunner.manager.getRepository(VehicleType);
-    const vehicleRepo = queryRunner.manager.getRepository(Vehicle);
-    const customerRepo = queryRunner.manager.getRepository(Customer);
-    const phoneRepo = queryRunner.manager.getRepository(CustomerPhoneNumber);
-    const serviceRepo = queryRunner.manager.getRepository(Service);
-    const servicePriceRepo = queryRunner.manager.getRepository(ServicePrice);
+    const vehicleTypeRepo = AppDataSource.getRepository(VehicleType);
+    const vehicleRepo = AppDataSource.getRepository(Vehicle);
+    const serviceRepo = AppDataSource.getRepository(Service);
+    const servicePriceRepo = AppDataSource.getRepository(ServicePrice);
+    const componentRepo = AppDataSource.getRepository(Component);
+    const jobRepo = AppDataSource.getRepository(ServiceJob);
 
-    for (const item of MOCK_VEHICLES) {
-      // 1. Ensure Category & Vehicle Type exist
-      let category = await categoryRepo.findOne({
-        where: { name: item.categoryName },
-      });
-      if (!category) {
-        category = await categoryRepo.save(
-          categoryRepo.create({ name: item.categoryName }),
-        );
-      }
-
-      let vehicleType = await typeRepo.findOne({
-        where: {
-          name: item.vehicleTypeName,
-          vehicleCategoryId: category.id,
-        },
-      });
-      if (!vehicleType) {
-        vehicleType = await typeRepo.save(
-          typeRepo.create({
-            name: item.vehicleTypeName,
-            vehicleCategoryId: category.id,
-          }),
-        );
-      }
-
-      // 2. Upsert Service Prices for this Vehicle Type
-      for (const [serviceName, price] of Object.entries(item.servicePrices)) {
-        let service = await serviceRepo.findOne({
-          where: { name: serviceName },
-        });
-        if (!service) {
-          service = await serviceRepo.save(
-            serviceRepo.create({ name: serviceName }),
-          );
-        }
-
-        const existingPrice = await servicePriceRepo.findOne({
-          where: {
-            serviceId: service.id,
-            vehicleTypeId: vehicleType.id,
+    // -------------------------------------------------------------------------
+    // Step 1: Load & Verify Existing Master Data from Database
+    // -------------------------------------------------------------------------
+    const [vehicleTypes, services, servicePrices, components] =
+      await Promise.all([
+        vehicleTypeRepo.find(),
+        serviceRepo.find(),
+        servicePriceRepo.find(),
+        componentRepo.find({
+          relations: {
+            parts: {
+              measurementOptions: true,
+            },
           },
-        });
+        }),
+      ]);
 
-        if (existingPrice) {
-          existingPrice.price = price;
-          await servicePriceRepo.save(existingPrice);
-        } else {
-          await servicePriceRepo.save(
-            servicePriceRepo.create({
-              serviceId: service.id,
-              vehicleTypeId: vehicleType.id,
-              price,
-            }),
-          );
-        }
-      }
-
-      // 3. Upsert Customer, Phone Numbers & Vehicle by Number Plate
-      const normalizedPlate = item.numberPlate.trim().toUpperCase();
-      let existingVehicle = await vehicleRepo.findOne({
-        where: { numberPlate: normalizedPlate },
-        relations: { customer: true },
-      });
-
-      if (!existingVehicle) {
-        const customer = await customerRepo.save(
-          customerRepo.create({ name: item.customerName }),
-        );
-
-        for (const p of item.phoneNumbers) {
-          await phoneRepo.save(
-            phoneRepo.create({
-              customerId: customer.id,
-              phoneNumber: p.phoneNumber,
-              isPrimary: p.isPrimary,
-            }),
-          );
-        }
-
-        existingVehicle = await vehicleRepo.save(
-          vehicleRepo.create({
-            numberPlate: normalizedPlate,
-            customerId: customer.id,
-            vehicleTypeId: vehicleType.id,
-          }),
-        );
-        console.log(
-          `✅ Created mock vehicle ${normalizedPlate} (${item.vehicleTypeName}) for customer ${item.customerName}`,
-        );
-      } else {
-        existingVehicle.vehicleTypeId = vehicleType.id;
-        await vehicleRepo.save(existingVehicle);
-        console.log(
-          `🔄 Updated existing mock vehicle ${normalizedPlate} (${item.vehicleTypeName})`,
-        );
-      }
+    if (
+      vehicleTypes.length === 0 ||
+      services.length === 0 ||
+      components.length === 0
+    ) {
+      throw new Error(
+        'Master data is missing! Please run "npm run seed" and "npm run seed:prices" before running "npm run seed:mock".',
+      );
     }
 
-    await queryRunner.commitTransaction();
-    console.log('🎉 Mock test data seeded successfully!');
+    // Build fast lookup maps by natural names
+    const vehicleTypeByName = new Map(vehicleTypes.map((vt) => [vt.name, vt]));
+    const serviceByName = new Map(services.map((s) => [s.name, s]));
+    const priceByServiceAndType = new Map(
+      servicePrices.map((sp) => [
+        `${sp.serviceId}_${sp.vehicleTypeId}`,
+        Number(sp.price),
+      ]),
+    );
+    const componentByName = new Map(components.map((c) => [c.name, c]));
+
+    const serviceJobDomainService = new ServiceJobDomainService(AppDataSource);
+
+    // -------------------------------------------------------------------------
+    // Step 2: Process Each Mock Service Job Fixture
+    // -------------------------------------------------------------------------
+    for (const fixture of MOCK_SERVICE_JOBS) {
+      const normalizedPlate = fixture.numberPlate.trim().toUpperCase();
+
+      // Resolve VehicleType
+      const vehicleType = vehicleTypeByName.get(fixture.vehicleTypeName);
+      if (!vehicleType) {
+        throw new Error(
+          `VehicleType "${fixture.vehicleTypeName}" not found in database`,
+        );
+      }
+
+      // Resolve Service Package
+      const servicePackage = serviceByName.get(fixture.servicePackageName);
+      if (!servicePackage) {
+        throw new Error(
+          `Service "${fixture.servicePackageName}" not found in database`,
+        );
+      }
+
+      // Check if this vehicle already exists in DB:
+      // - If it does NOT exist yet, we pass id: null (simulating a brand-new registration).
+      // - If it ALREADY exists (e.g., 2nd visit of CAB-1234), we pass its existing vehicle.id & customer.id.
+      const existingVehicle = await vehicleRepo.findOne({
+        where: { numberPlate: normalizedPlate },
+      });
+
+      // Skip if this exact mock job (same vehicle + same jobDate) was already seeded
+      if (existingVehicle) {
+        const existingJob = await jobRepo.findOne({
+          where: {
+            vehicleId: existingVehicle.id,
+            jobDate: new Date(fixture.jobDate),
+          },
+        });
+        if (existingJob) {
+          console.log(
+            `⏭️  Skipping already seeded job for ${normalizedPlate} on ${fixture.jobDate}`,
+          );
+          continue;
+        }
+      }
+
+      // Resolve Products (productId -> brandId -> measurementOptionId) from DB
+      const resolvedProducts = fixture.products.map((item) => {
+        const component = componentByName.get(item.productName);
+        if (!component) {
+          throw new Error(`Product "${item.productName}" not found in DB`);
+        }
+
+        const part = (component.parts ?? []).find(
+          (p) => p.name === item.brandName,
+        );
+        if (!part) {
+          throw new Error(
+            `Brand "${item.brandName}" under "${item.productName}" not found in DB`,
+          );
+        }
+
+        const option = (part.measurementOptions ?? []).find(
+          (opt) => opt.type === item.measurementType,
+        );
+        if (!option) {
+          throw new Error(
+            `Measurement option "${item.measurementType}" for "${item.productName} - ${item.brandName}" not found in DB`,
+          );
+        }
+
+        return {
+          productId: String(component.id),
+          brandId: String(part.id),
+          measurementOptionId: String(option.id),
+          quantity: item.quantity,
+        };
+      });
+
+      // Resolve configured service price from DB
+      const estimatedServiceCost =
+        priceByServiceAndType.get(`${servicePackage.id}_${vehicleType.id}`) ??
+        0;
+      const totalCost = estimatedServiceCost + fixture.extraPartsCost;
+
+      // Construct the exact payload shape sent by the frontend
+      const payload: CreateServiceJobDto = {
+        vehicle: {
+          id: existingVehicle ? String(existingVehicle.id) : null,
+          numberPlate: normalizedPlate,
+          vehicleTypeId: String(vehicleType.id),
+        },
+        customer: {
+          id: existingVehicle ? String(existingVehicle.customerId) : null,
+          name: fixture.customerName,
+          phones: fixture.phones,
+        },
+        jobDate: fixture.jobDate,
+        meterReading: fixture.meterReading,
+        nextMeterReading: fixture.nextMeterReading,
+        servicePackageId: String(servicePackage.id),
+        products: resolvedProducts,
+        estimatedCost: estimatedServiceCost,
+        totalCost,
+      };
+
+      const createdJob =
+        await serviceJobDomainService.createServiceJob(payload);
+      const visitMode = existingVehicle
+        ? `Returning Vehicle (id=${existingVehicle.id})`
+        : 'New Registration (id=null)';
+
+      console.log(
+        `✅ Seeded Job #${createdJob.id} for ${normalizedPlate} [${visitMode}] on ${fixture.jobDate} — ${fixture.servicePackageName} (Total: Rs.${createdJob.totalCost})`,
+      );
+    }
+
+    console.log('🎉 All mock service jobs seeded successfully!');
   } catch (error) {
-    console.error('❌ Mock test seeding failed. Rolling back...', error);
-    await queryRunner.rollbackTransaction();
+    console.error('❌ Mock test seeding failed:', error);
     process.exit(1);
   } finally {
-    await queryRunner.release();
     await AppDataSource.destroy();
   }
 }
