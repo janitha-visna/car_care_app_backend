@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed:vehicle-config": "ts-node -r tsconfig-paths/register src/database/seeds/run-vehicle-config-seed.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/run-master-seed.ts",
+    "seed:prices": "ts-node -r tsconfig-paths/register src/database/seeds/run-service-prices-seed.ts",
     "seed:mock": "ts-node -r tsconfig-paths/register src/database/seeds/run-mock-test-seed.ts"
   },
   "dependencies": {
