@@ -16,6 +16,7 @@ export interface MockServiceJobProduct {
   brandId: number;
   measurementOptionId: number;
   quantity: number;
+  supplySource: 'SHOP_SUPPLIED' | 'CUSTOMER_SUPPLIED';
 }
 
 /**
@@ -129,6 +130,10 @@ function generateJobProducts(
       brandId: Number(chosenPart.id),
       measurementOptionId: Number(chosenOption.id),
       quantity,
+      supplySource: faker.helpers.arrayElement([
+        'SHOP_SUPPLIED',
+        'CUSTOMER_SUPPLIED',
+      ] as const),
     };
   });
 }
@@ -236,11 +241,14 @@ export function generateMockServiceJobs(): MockServiceJobPayload[] {
 
 /**
  * Entry point when running `npm run seed:faker`.
- * Generates all 2026 mock jobs in memory (no DB connection) and logs a summary + sample.
+ * Generates all 2026 mock jobs and POSTs each one to `POST /service-jobs`.
  */
-function runFakerSeed(): void {
+async function runFakerSeed(): Promise<void> {
+  const apiUrl = process.env.API_URL ?? 'http://localhost:3000';
+  const endpoint = `${apiUrl}/service-jobs`;
+
   console.log(
-    '🚀 Generating offline Faker mock service jobs for all of 2026...',
+    '🚀 Generating Faker mock service jobs for all of 2026...',
   );
 
   const mockJobs = generateMockServiceJobs();
@@ -249,8 +257,47 @@ function runFakerSeed(): void {
   console.log(
     `📅 Date range: ${mockJobs[0]?.jobDate} -> ${mockJobs[mockJobs.length - 1]?.jobDate}`,
   );
-  console.log('📦 Sample payload (first 2 jobs):');
-  console.log(JSON.stringify(mockJobs.slice(0, 2), null, 2));
+  console.log(`📤 Sending jobs to ${endpoint}...`);
+
+  let successCount = 0;
+  let failureCount = 0;
+
+  for (let i = 0; i < mockJobs.length; i++) {
+    const job = mockJobs[i];
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(job),
+      });
+
+      if (!response.ok) {
+        failureCount++;
+        const errText = await response.text();
+        console.error(
+          `❌ Job ${i + 1}/${mockJobs.length} (${job.jobDate}) failed [${response.status}]: ${errText}`,
+        );
+      } else {
+        successCount++;
+      }
+    } catch (error) {
+      failureCount++;
+      console.error(
+        `❌ Job ${i + 1}/${mockJobs.length} (${job.jobDate}) network error:`,
+        error instanceof Error ? error.message : error,
+      );
+    }
+
+    if ((i + 1) % 100 === 0 || i === mockJobs.length - 1) {
+      console.log(
+        `⏳ Progress: ${i + 1}/${mockJobs.length} (✅ ${successCount}, ❌ ${failureCount})`,
+      );
+    }
+  }
+
+  console.log(
+    `🎉 Faker seeding finished! Inserted: ${successCount}, Failed: ${failureCount}`,
+  );
 }
 
-runFakerSeed();
+void runFakerSeed();
