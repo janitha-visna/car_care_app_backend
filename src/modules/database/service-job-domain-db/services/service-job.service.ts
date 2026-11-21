@@ -368,4 +368,58 @@ export class ServiceJobDomainService {
       };
     });
   }
+
+  async getMonthlyRevenue(year: number) {
+    const startDate = `${year}-01-01`;
+    const endDate = `${year + 1}-01-01`;
+
+    const rows = await this.dataSource
+      .getRepository(ServiceJob)
+      .createQueryBuilder('job')
+      .select('EXTRACT(MONTH FROM job.job_date)::int', 'month')
+      .addSelect('COALESCE(SUM(job.total_cost), 0)', 'revenue')
+      .where('job.job_date >= :startDate AND job.job_date < :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('EXTRACT(MONTH FROM job.job_date)')
+      .orderBy('month', 'ASC')
+      .getRawMany<{ month: number; revenue: string }>();
+
+    const monthLabels = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    const rowByMonth = new Map(
+      rows.map((r) => [Number(r.month), Number(r.revenue)]),
+    );
+
+    const months = monthLabels.map((label, index) => {
+      const monthNumber = index + 1;
+      return {
+        month: monthNumber,
+        label,
+        revenue: rowByMonth.get(monthNumber) ?? 0,
+      };
+    });
+
+    const totalRevenue = months.reduce((sum, m) => sum + m.revenue, 0);
+
+    return {
+      year,
+      totalRevenue,
+      months,
+    };
+  }
 }

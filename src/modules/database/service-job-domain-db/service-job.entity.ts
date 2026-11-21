@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -33,6 +34,7 @@ export class ServiceJob {
   @JoinColumn({ name: 'vehicle_id' })
   vehicle!: Vehicle;
 
+  @Index('idx_service_jobs_job_date')
   @Column({ name: 'job_date', type: 'date' })
   jobDate!: Date;
 

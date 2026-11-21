@@ -247,9 +247,7 @@ async function runFakerSeed(): Promise<void> {
   const apiUrl = process.env.API_URL ?? 'http://localhost:3000';
   const endpoint = `${apiUrl}/service-jobs`;
 
-  console.log(
-    '🚀 Generating Faker mock service jobs for all of 2026...',
-  );
+  console.log('🚀 Generating Faker mock service jobs for all of 2026...');
 
   const mockJobs = generateMockServiceJobs();
 
